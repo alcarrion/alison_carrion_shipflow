@@ -23,7 +23,7 @@
    ```
 
 2. Abre el proyecto en **IntelliJ IDEA** o cualquier IDE compatible con Spring Boot.
-   ```
+   
 
 ## ⚙️ Cómo correr el proyecto
 
