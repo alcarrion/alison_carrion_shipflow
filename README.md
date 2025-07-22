@@ -23,13 +23,46 @@
    ```
 
 2. Abre el proyecto en **IntelliJ IDEA** o cualquier IDE compatible con Spring Boot.
-
-3. Asegúrate de tener Docker corriendo (si usas DB externa).
-
-4. Ejecuta el proyecto:
-   ```bash
-   ./gradlew bootRun
    ```
+
+## ⚙️ Cómo correr el proyecto
+
+1. Asegúrate de tener Docker instalado y corriendo.
+2. Abre una terminal en el directorio raíz del proyecto.
+3. Ejecuta:
+
+```bash
+docker-compose up
+```
+
+Esto levantará el contenedor de PostgreSQL necesario para el backend.
+
+4. Abre otra terminal y corre el backend desde IntelliJ o usando:
+
+```bash
+./gradlew bootRun
+```
+
+---
+
+## 🛠️ Conexión en DBeaver
+
+Si deseas conectarte a tu base de datos PostgreSQL desde DBeaver para revisar, insertar o borrar datos directamente, sigue estos pasos:
+
+### 🔧 Configuración recomendada:
+
+1. Abre **DBeaver**.
+2. Haz clic en **Archivo > Nueva conexión**.
+3. Selecciona **PostgreSQL**.
+4. Completa los siguientes parámetros:
+
+| Parámetro         | Valor          |
+|-------------------|----------------|
+| **Host**          | `localhost`    |
+| **Puerto**        | `6969`         |
+| **Base de datos** | `shipflowdb`   |
+| **Usuario**       | `admin`        |
+| **Contraseña**    | `admin`        |
 
 
 5. El backend estará disponible en:  

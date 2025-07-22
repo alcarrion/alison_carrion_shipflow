@@ -1,0 +1,241 @@
+{
+	"info": {
+		"_postman_id": "13971fbf-ed99-4758-9673-6d01c8586e67",
+		"name": "ShipFlow - Collection Postman",
+		"description": "Colección de Postman para probar todos los endpoints de ShipFlow, incluyendo casos exitosos y errores esperados.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40273124"
+	},
+	"item": [
+		{
+			"name": "Crear envío",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"DOCUMENT\",\n  \"weight\": 0.8,\n  \"description\": \"Env\\u00edo urgente\",\n  \"city_from\": \"Quito\",\n  \"city_to\": \"Cuenca\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cambiar a IN_TRANSIT",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"IN_TRANSIT\",\n  \"comment\": \"Recogido en agencia\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments/{{trackingId}}/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments",
+						"{{trackingId}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cambiar a DELIVERED",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"DELIVERED\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments/{{trackingId}}/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments",
+						"{{trackingId}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ver historial de eventos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments/{{trackingId}}/events",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments",
+						"{{trackingId}}",
+						"events"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Listar todos los envíos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Origen y destino iguales",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"SMALL_BOX\",\n  \"weight\": 1.2,\n  \"description\": \"Error de ciudad\",\n  \"city_from\": \"Cuenca\",\n  \"city_to\": \"Cuenca\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Descripción muy larga",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"FRAGILE\",\n  \"weight\": 1.0,\n  \"description\": \"Este texto es demasiado largo y excede los cincuenta caracteres permitidos por el sistema.\",\n  \"city_from\": \"Loja\",\n  \"city_to\": \"Quito\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Estado no permitido",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"LOST\",\n  \"comment\": \"Se perdi\\u00f3\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments/{{trackingId}}/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments",
+						"{{trackingId}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
