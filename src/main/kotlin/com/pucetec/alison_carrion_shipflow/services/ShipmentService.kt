@@ -14,7 +14,6 @@ import com.pucetec.alison_carrion_shipflow.repositories.ShipmentEventRepository
 import com.pucetec.alison_carrion_shipflow.repositories.ShipmentRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
 
 @Service
 @Transactional
@@ -37,7 +36,12 @@ class ShipmentService(
         val shippingType = ShippingType.from(request.type)
             ?: throw UnsupportedShippingTypeException("Tipo de envío inválido. Usa: DOCUMENT, SMALL_BOX o FRAGILE.")
 
-        val trackingId = UUID.randomUUID().toString()
+        val lastShipment = shipmentRepository.findTopByOrderByIdDesc()
+        val trackingId = if (lastShipment != null) {
+            lastShipment.trackingId.toLongOrNull()?.plus(1)?.toString() ?: "1000"
+        } else {
+            "1000"
+        }
 
         val shipment = shipmentMapper.toEntity(request, trackingId, shippingType)
         val savedShipment = shipmentRepository.save(shipment)
@@ -54,18 +58,17 @@ class ShipmentService(
     fun getAllShipments(): List<ShipmentResponse> =
         shipmentRepository.findAll().map { shipmentMapper.toResponse(it) }
 
-    fun getShipmentEvents(shipmentId: Long): List<ShipmentEventResponse> {
-        if (!shipmentRepository.existsById(shipmentId)) {
-            throw ShipmentNotFoundException("No se encontró el envío con ID $shipmentId.")
-        }
+    fun getShipmentEvents(trackingId: String): List<ShipmentEventResponse> {
+        val shipment = shipmentRepository.findByTrackingId(trackingId)
+            ?: throw ShipmentNotFoundException("No se encontró el envío con tracking ID $trackingId.")
 
-        return shipmentEventRepository.findByShipmentIdOrderByEventDateAsc(shipmentId)
+        return shipmentEventRepository.findByShipmentIdOrderByEventDateAsc(shipment.id)
             .map { eventMapper.toResponse(it) }
     }
 
-    fun updateShipmentStatus(shipmentId: Long, request: UpdateShipmentStatusRequest): UpdateStatusResponse {
-        val shipment = shipmentRepository.findById(shipmentId)
-            .orElseThrow { ShipmentNotFoundException("No se encontró el envío con ID $shipmentId.") }
+    fun updateShipmentStatus(trackingId: String, request: UpdateShipmentStatusRequest): UpdateStatusResponse {
+        val shipment = shipmentRepository.findByTrackingId(trackingId)
+            ?: throw ShipmentNotFoundException("No se encontró el envío con tracking ID $trackingId.")
 
         val newStatus = ShippingStatus.entries.find { it.name == request.status }
             ?: throw UnknownShippingStatusException("Estado inválido: ${request.status}. Usa: PENDING, IN_TRANSIT, DELIVERED, ON_HOLD, CANCELLED.")

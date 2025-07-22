@@ -7,8 +7,6 @@ import com.pucetec.alison_carrion_shipflow.models.responses.ShipmentResponse
 import com.pucetec.alison_carrion_shipflow.models.responses.UpdateStatusResponse
 import com.pucetec.alison_carrion_shipflow.routes.Routes
 import com.pucetec.alison_carrion_shipflow.services.ShipmentService
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
@@ -18,21 +16,21 @@ class ShipmentController(
 ) {
 
     @PostMapping
-    fun create(@RequestBody request: ShipmentRequest): ResponseEntity<ShipmentResponse> =
-        ResponseEntity.status(HttpStatus.CREATED).body(shipmentService.createShipment(request))
+    fun createShipment(@RequestBody request: ShipmentRequest): ShipmentResponse =
+        shipmentService.createShipment(request)
 
     @GetMapping
-    fun getAll(): List<ShipmentResponse> =
+    fun listShipments(): List<ShipmentResponse> =
         shipmentService.getAllShipments()
 
-    @PutMapping("/{id}${Routes.STATUS}")
+    @PutMapping("/{trackingId}${Routes.STATUS}")
     fun updateStatus(
-        @PathVariable id: Long,
+        @PathVariable trackingId: String,
         @RequestBody request: UpdateShipmentStatusRequest
-    ): ResponseEntity<UpdateStatusResponse> =
-        ResponseEntity.ok(shipmentService.updateShipmentStatus(id, request))
+    ): UpdateStatusResponse =
+        shipmentService.updateShipmentStatus(trackingId, request)
 
-    @GetMapping("/{id}${Routes.EVENTS}")
-    fun getEvents(@PathVariable id: Long): List<ShipmentEventResponse> =
-        shipmentService.getShipmentEvents(id)
+    @GetMapping("/{trackingId}${Routes.EVENTS}")
+    fun getShipmentEvents(@PathVariable trackingId: String): List<ShipmentEventResponse> =
+        shipmentService.getShipmentEvents(trackingId)
 }

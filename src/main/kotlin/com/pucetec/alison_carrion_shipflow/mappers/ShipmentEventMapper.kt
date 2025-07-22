@@ -16,9 +16,7 @@ class ShipmentEventMapper {
             id = entity.id,
             status = entity.status.statusName,
             comment = entity.comment,
-            eventDate = entity.eventDate,
-            createdAt = entity.createdAt,
-            updatedAt = entity.updatedAt
+            eventDate = entity.eventDate
         )
     }
 

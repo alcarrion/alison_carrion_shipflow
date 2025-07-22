@@ -9,11 +9,5 @@ data class ShipmentEventResponse(
     val comment: String?,
 
     @JsonProperty("event_date")
-    val eventDate: LocalDateTime,
-
-    @JsonProperty("created_at")
-    val createdAt: LocalDateTime,
-
-    @JsonProperty("updated_at")
-    val updatedAt: LocalDateTime
+    val eventDate: LocalDateTime
 )

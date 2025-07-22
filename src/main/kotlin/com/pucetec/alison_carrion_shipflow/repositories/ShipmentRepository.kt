@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface ShipmentRepository : JpaRepository<Shipment, Long> {
     fun findByTrackingId(trackingId: String): Shipment?
+    fun findTopByOrderByIdDesc(): Shipment?
 }
