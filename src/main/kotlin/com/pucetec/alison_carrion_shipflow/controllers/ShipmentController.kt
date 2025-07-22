@@ -33,4 +33,8 @@ class ShipmentController(
     @GetMapping("/{trackingId}${Routes.EVENTS}")
     fun getShipmentEvents(@PathVariable trackingId: String): List<ShipmentEventResponse> =
         shipmentService.getShipmentEvents(trackingId)
+
+    @GetMapping("/{trackingId}")
+    fun getShipmentByTrackingId(@PathVariable trackingId: String): ShipmentResponse =
+        shipmentService.getShipmentByTrackingId(trackingId)
 }

@@ -66,6 +66,12 @@ class ShipmentService(
             .map { eventMapper.toResponse(it) }
     }
 
+    fun getShipmentByTrackingId(trackingId: String): ShipmentResponse {
+        val shipment = shipmentRepository.findByTrackingId(trackingId)
+            ?: throw ShipmentNotFoundException("No se encontró el envío con tracking ID $trackingId.")
+        return shipmentMapper.toResponse(shipment)
+    }
+
     fun updateShipmentStatus(trackingId: String, request: UpdateShipmentStatusRequest): UpdateStatusResponse {
         val shipment = shipmentRepository.findByTrackingId(trackingId)
             ?: throw ShipmentNotFoundException("No se encontró el envío con tracking ID $trackingId.")
