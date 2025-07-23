@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface ShipmentEventRepository : JpaRepository<ShipmentEvent, Long> {
-    fun findByShipmentIdOrderByEventDateAsc(shipmentId: Long): List<ShipmentEvent>
+    fun findByShipmentIdOrderByCreatedAtAsc(shipmentId: Long): List<ShipmentEvent>
 }

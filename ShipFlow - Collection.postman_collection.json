@@ -19,7 +19,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"type\": \"DOCUMENT\",\n  \"weight\": 0.8,\n  \"description\": \"Env\\u00edo urgente\",\n  \"city_from\": \"Quito\",\n  \"city_to\": \"Cuenca\"\n}"
+					"raw": "{\n  \"type\": \"DOCUMENT\",\n  \"weight\": 0.8,\n  \"description\": \"Envio de un documento\",\n  \"city_from\": \"Quito\",\n  \"city_to\": \"Cuenca\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/api/shipflow/shipments",
@@ -70,6 +70,70 @@
 			"response": []
 		},
 		{
+			"name": "Cambiar a ON_HOLD",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"ON_HOLD\",\n  \"comment\": \"Pedido retenido\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments/{{trackingId}}/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments",
+						"{{trackingId}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cambiar a IN_TRANSIT",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"IN_TRANSIT\",\n  \"comment\": \"En transito\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments/{{trackingId}}/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments",
+						"{{trackingId}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Cambiar a DELIVERED",
 			"request": {
 				"method": "PUT",
@@ -81,7 +145,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"status\": \"DELIVERED\"\n}"
+					"raw": "{\n  \"status\": \"DELIVERED\",\n  \"comment\": \"Entregado al cliente final\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/api/shipflow/shipments/{{trackingId}}/status",
@@ -129,6 +193,36 @@
 			"request": {
 				"method": "GET",
 				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Validar el tipo de paquete",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"type\": \"Fr\",\r\n  \"weight\": 1.2,\r\n  \"description\": \"Tener cuidado es fragil.\",\r\n  \"city_from\": \"Latacunga\",\r\n  \"city_to\": \"Riobamba\"\r\n}\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
 				"url": {
 					"raw": "http://localhost:8080/api/shipflow/shipments",
 					"protocol": "http",
@@ -218,6 +312,100 @@
 				"body": {
 					"mode": "raw",
 					"raw": "{\n  \"status\": \"LOST\",\n  \"comment\": \"Se perdi\\u00f3\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments/{{trackingId}}/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments",
+						"{{trackingId}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Crear Nuevo Envío",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"type\": \"DOCUMENT\",\n  \"weight\": 10,\n  \"description\": \"Envio de un documento\",\n  \"city_from\": \"Ambato\",\n  \"city_to\": \"Cuenca\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Error de Pending a ON_HOLD",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"ON_HOLD\",\n  \"comment\": \"Pedido Cancelado\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/shipflow/shipments/{{trackingId}}/status",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"shipflow",
+						"shipments",
+						"{{trackingId}}",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Error pending a delivered",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"status\": \"DELIVERED\",\n  \"comment\": \"ENTREGADO\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/api/shipflow/shipments/{{trackingId}}/status",

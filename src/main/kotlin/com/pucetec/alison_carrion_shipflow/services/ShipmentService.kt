@@ -3,6 +3,7 @@ package com.pucetec.alison_carrion_shipflow.services
 import com.pucetec.alison_carrion_shipflow.exceptions.exceptions.*
 import com.pucetec.alison_carrion_shipflow.mappers.ShipmentEventMapper
 import com.pucetec.alison_carrion_shipflow.mappers.ShipmentMapper
+import com.pucetec.alison_carrion_shipflow.models.entities.Shipment
 import com.pucetec.alison_carrion_shipflow.models.entities.ShippingStatus
 import com.pucetec.alison_carrion_shipflow.models.entities.ShippingType
 import com.pucetec.alison_carrion_shipflow.models.requests.ShipmentRequest
@@ -58,18 +59,15 @@ class ShipmentService(
     fun getAllShipments(): List<ShipmentResponse> =
         shipmentRepository.findAll().map { shipmentMapper.toResponse(it) }
 
-    fun getShipmentEvents(trackingId: String): List<ShipmentEventResponse> {
-        val shipment = shipmentRepository.findByTrackingId(trackingId)
-            ?: throw ShipmentNotFoundException("No se encontró el envío con tracking ID $trackingId.")
-
-        return shipmentEventRepository.findByShipmentIdOrderByEventDateAsc(shipment.id)
-            .map { eventMapper.toResponse(it) }
-    }
-
     fun getShipmentByTrackingId(trackingId: String): ShipmentResponse {
         val shipment = shipmentRepository.findByTrackingId(trackingId)
             ?: throw ShipmentNotFoundException("No se encontró el envío con tracking ID $trackingId.")
         return shipmentMapper.toResponse(shipment)
+    }
+
+    fun getShipmentByTrackingIdRaw(trackingId: String): Shipment {
+        return shipmentRepository.findByTrackingId(trackingId)
+            ?: throw ShipmentNotFoundException("No se encontró el envío con tracking ID $trackingId.")
     }
 
     fun updateShipmentStatus(trackingId: String, request: UpdateShipmentStatusRequest): UpdateStatusResponse {
@@ -79,15 +77,21 @@ class ShipmentService(
         val newStatus = ShippingStatus.entries.find { it.name == request.status }
             ?: throw UnknownShippingStatusException("Estado inválido: ${request.status}. Usa: PENDING, IN_TRANSIT, DELIVERED, ON_HOLD, CANCELLED.")
 
-        if (!isValidTransition(shipment.status, newStatus)) {
-            throw DisallowedStatusChangeException("No se puede cambiar el estado de ${shipment.status} a $newStatus.")
+        val currentStatus = shipment.status
+
+        if (!isValidTransition(currentStatus, newStatus)) {
+            throw DisallowedStatusChangeException("No se puede cambiar el estado de $currentStatus a $newStatus.")
         }
 
         if (newStatus == ShippingStatus.DELIVERED) {
             val wasInTransit = shipment.events.any { it.status == ShippingStatus.IN_TRANSIT }
             if (!wasInTransit) {
-                throw ShippingStatusRuleException("Solo se puede marcar como ENTREGADO si antes estuvo EN TRÁNSITO.")
+                throw ShippingStatusRuleException("Solo se puede marcar como ENTREGADO si antes estuvo EN_TRÁNSITO.")
             }
+        }
+
+        if (currentStatus == ShippingStatus.DELIVERED || currentStatus == ShippingStatus.CANCELLED) {
+            throw ShippingStatusRuleException("El envío ya está en estado final ($currentStatus), no puede modificarse.")
         }
 
         shipment.status = newStatus

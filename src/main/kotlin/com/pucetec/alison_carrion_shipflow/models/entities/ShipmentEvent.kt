@@ -18,7 +18,5 @@ data class ShipmentEvent(
     @JoinColumn(name = "shipment_id", nullable = false)
     val shipment: Shipment,
 
-    @Column(name = "event_date", nullable = false)
-    val eventDate: LocalDateTime = LocalDateTime.now()
 
 ) : BaseEntity()

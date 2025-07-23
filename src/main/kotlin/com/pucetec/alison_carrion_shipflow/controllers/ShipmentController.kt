@@ -1,8 +1,10 @@
 package com.pucetec.alison_carrion_shipflow.controllers
 
+import com.pucetec.alison_carrion_shipflow.mappers.ShipmentEventMapper
+import com.pucetec.alison_carrion_shipflow.mappers.ShipmentMapper
 import com.pucetec.alison_carrion_shipflow.models.requests.ShipmentRequest
 import com.pucetec.alison_carrion_shipflow.models.requests.UpdateShipmentStatusRequest
-import com.pucetec.alison_carrion_shipflow.models.responses.ShipmentEventResponse
+import com.pucetec.alison_carrion_shipflow.models.responses.ShipmentDetailResponse
 import com.pucetec.alison_carrion_shipflow.models.responses.ShipmentResponse
 import com.pucetec.alison_carrion_shipflow.models.responses.UpdateStatusResponse
 import com.pucetec.alison_carrion_shipflow.routes.Routes
@@ -12,7 +14,9 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping(Routes.SHIPMENTS)
 class ShipmentController(
-    private val shipmentService: ShipmentService
+    private val shipmentService: ShipmentService,
+    private val shipmentMapper: ShipmentMapper,
+    private val shipmentEventMapper: ShipmentEventMapper
 ) {
 
     @PostMapping
@@ -31,8 +35,10 @@ class ShipmentController(
         shipmentService.updateShipmentStatus(trackingId, request)
 
     @GetMapping("/{trackingId}${Routes.EVENTS}")
-    fun getShipmentEvents(@PathVariable trackingId: String): List<ShipmentEventResponse> =
-        shipmentService.getShipmentEvents(trackingId)
+    fun getShipmentDetailByTrackingId(@PathVariable trackingId: String): ShipmentDetailResponse {
+        val shipment = shipmentService.getShipmentByTrackingIdRaw(trackingId)
+        return shipmentMapper.toDetailResponse(shipment, shipmentEventMapper)
+    }
 
     @GetMapping("/{trackingId}")
     fun getShipmentByTrackingId(@PathVariable trackingId: String): ShipmentResponse =
