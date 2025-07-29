@@ -38,11 +38,7 @@ class ShipmentService(
             ?: throw UnsupportedShippingTypeException("Tipo de envío inválido. Usa: DOCUMENT, SMALL_BOX o FRAGILE.")
 
         val lastShipment = shipmentRepository.findTopByOrderByIdDesc()
-        val trackingId = if (lastShipment != null) {
-            lastShipment.trackingId.toLongOrNull()?.plus(1)?.toString() ?: "1000"
-        } else {
-            "1000"
-        }
+        val trackingId = (lastShipment?.trackingId?.toLongOrNull()?.plus(1) ?: 1000).toString()
 
         val shipment = shipmentMapper.toEntity(request, trackingId, shippingType)
         val savedShipment = shipmentRepository.save(shipment)
@@ -78,28 +74,22 @@ class ShipmentService(
             ?: throw UnknownShippingStatusException("Estado inválido: ${request.status}. Usa: PENDING, IN_TRANSIT, DELIVERED, ON_HOLD, CANCELLED.")
 
         val currentStatus = shipment.status
-
+        if (currentStatus == ShippingStatus.DELIVERED || currentStatus == ShippingStatus.CANCELLED) {
+            throw ShippingStatusRuleException("El envío ya está en estado final ($currentStatus), no puede modificarse.")
+        }
         if (!isValidTransition(currentStatus, newStatus)) {
             throw DisallowedStatusChangeException("No se puede cambiar el estado de $currentStatus a $newStatus.")
         }
-
         if (newStatus == ShippingStatus.DELIVERED) {
             val wasInTransit = shipment.events.any { it.status == ShippingStatus.IN_TRANSIT }
             if (!wasInTransit) {
                 throw ShippingStatusRuleException("Solo se puede marcar como ENTREGADO si antes estuvo EN_TRÁNSITO.")
             }
         }
-
-        if (currentStatus == ShippingStatus.DELIVERED || currentStatus == ShippingStatus.CANCELLED) {
-            throw ShippingStatusRuleException("El envío ya está en estado final ($currentStatus), no puede modificarse.")
-        }
-
         shipment.status = newStatus
         shipmentRepository.save(shipment)
-
         val event = eventMapper.toEntity(request, shipment)
         val savedEvent = shipmentEventRepository.save(event)
-
         return eventMapper.toUpdateStatusResponse(savedEvent)
     }
 
